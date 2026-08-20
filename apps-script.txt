@@ -1,0 +1,32 @@
+// Backend for Mike's birthday card.
+// Paste this whole file into Extensions > Apps Script, replacing the starter code.
+// Sheet layout: row 1 headers, A = Name, B = Message, C = Date.
+
+function doGet(e) {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheets()[0];
+  var rows = sheet.getDataRange().getValues();
+  var out = [];
+  for (var i = 1; i < rows.length; i++) {
+    if (rows[i][0] || rows[i][1]) {
+      out.push({
+        name: String(rows[i][0]),
+        message: String(rows[i][1]),
+        date: String(rows[i][2])
+      });
+    }
+  }
+  var cb = (e && e.parameter && e.parameter.callback) ? e.parameter.callback : 'handleMessages';
+  return ContentService
+    .createTextOutput(cb + '(' + JSON.stringify(out) + ')')
+    .setMimeType(ContentService.MimeType.JAVASCRIPT);
+}
+
+function doPost(e) {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheets()[0];
+  sheet.appendRow([
+    e.parameter.name || '',
+    e.parameter.message || '',
+    new Date()
+  ]);
+  return ContentService.createTextOutput('OK');
+}
