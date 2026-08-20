@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Happy Birthday, Mike!</title>
+
+<!-- THE ONLY EDIT IN THIS FILE: paste your Apps Script /exec URL between the quotes on the next line -->
+<script>var SCRIPT_URL = 'PASTE_YOUR_APPS_SCRIPT_EXEC_URL_HERE';</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --bg: #04060c;
+    --panel: rgba(11, 15, 23, 0.94);
+    --row: #10141d;
+    --line: rgba(255, 255, 255, 0.07);
+    --gold: #d9b56a;
+    --gold-bright: #eed9a4;
+    --ink: #e8e6df;
+    --muted: #9aa0ab;
+    --muted-2: #8b8f98;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Inter', sans-serif;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ============ HERO SCENE ============ */
+  .hero {
+    position: relative;
+    z-index: 1;
+    overflow: hidden;
+    background: var(--bg);
+  }
+  .zoomwrap {
+    position: relative;
+    animation: kenburns 38s ease-in-out infinite alternate;
+    transform-origin: 62% 38%;
+  }
+  @keyframes kenburns {
+    from { transform: scale(1); }
+    to   { transform: scale(1.045); }
+  }
+  .hero img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  .fx-layer {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+  #flyLayer { z-index: 3; }
+  .hero-fade {
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    height: 64px;
+    background: linear-gradient(180deg, rgba(4, 6, 12, 0), var(--bg));
+    pointer-events: none;
+    z-index: 4;
+  }
+
+  /* lantern glows */
+  .glow {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    mix-blend-mode: screen;
+    background: radial-gradient(circle,
+      rgba(255, 200, 96, 0.55) 0%,
+      rgba(255, 172, 60, 0.20) 42%,
+      rgba(255, 172, 60, 0) 70%);
+    animation: flicker 3s ease-in-out infinite;
+  }
+  .glow.main {
+    pointer-events: auto;
+    cursor: pointer;
+  }
+  .glow.main:hover,
+  .glow.main:active {
+    animation-play-state: paused;
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.25);
+    transition: transform 0.35s ease, opacity 0.35s ease;
+  }
+  @keyframes flicker {
+    0%   { opacity: 0.72; }
+    9%   { opacity: 0.92; }
+    21%  { opacity: 0.66; }
+    34%  { opacity: 1; }
+    47%  { opacity: 0.78; }
+    58%  { opacity: 0.95; }
+    71%  { opacity: 0.68; }
+    85%  { opacity: 0.9; }
+    100% { opacity: 0.72; }
+  }
+
+  /* twinkling sky */
+  .tw {
+    position: absolute;
+    width: 2px; height: 2px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 0 4px 1px rgba(255, 255, 255, 0.7);
+    animation: tw 4s ease-in-out infinite;
+  }
+  @keyframes tw {
+    0%, 100% { opacity: 0.05; }
+    50%      { opacity: 0.9; }
+  }
+
+  /* drifting clouds */
+  .cloud {
+    position: absolute;
+    left: 0;
+    width: 55%;
+    height: 24%;
+    border-radius: 50%;
+    background: radial-gradient(ellipse at center, rgba(190, 205, 245, 0.12) 0%, rgba(190, 205, 245, 0) 68%);
+    filter: blur(12px);
+    mix-blend-mode: screen;
+    animation: cloudDrift 90s linear infinite;
+  }
+  @keyframes cloudDrift {
+    from { transform: translateX(-120%); }
+    to   { transform: translateX(230%); }
+  }
+
+  /* shooting stars */
+  .shooter {
+    position: absolute;
+    width: 130px; height: 1.6px;
+    border-radius: 2px;
+    background: linear-gradient(90deg, rgba(255, 246, 214, 0), rgba(255, 246, 214, 0.95));
+    transform: rotate(-24deg);
+    animation: shoot 1.15s linear forwards;
+  }
+  @keyframes shoot {
+    from { transform: translateX(0) rotate(-24deg); opacity: 0; }
+    8%   { opacity: 1; }
+    to   { transform: translateX(56vw) rotate(-24deg); opacity: 0; }
+  }
+
+  /* fireflies */
+  .fly {
+    position: absolute;
+    width: 4px; height: 4px;
+    border-radius: 50%;
+    background: #ffe9a8;
+    box-shadow: 0 0 6px 2px rgba(255, 214, 120, 0.9), 0 0 16px 7px rgba(255, 180, 70, 0.32);
+    animation: drift var(--dd, 7s) ease-in-out infinite alternate,
+               pulse var(--pd, 3s) ease-in-out infinite;
+  }
+  @keyframes drift {
+    from { transform: translate(0, 0); }
+    to   { transform: translate(var(--dx, 20px), var(--dy, -14px)); }
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 0.15; }
+    50%      { opacity: 1; }
+  }
+  .fly.burst { animation: burst 2.3s ease-out forwards; }
+  @keyframes burst {
+    0%   { transform: translate(0, 0) scale(0.6); opacity: 0; }
+    12%  { opacity: 1; }
+    100% { transform: translate(var(--dx), var(--dy)) scale(1); opacity: 0; }
+  }
+
+  /* ============ MOBILE HEADLINE (desktop keeps the baked-in art text) ============ */
+  .hero-text {
+    display: none;
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 28px 26px 4px;
+  }
+  @media (max-width: 700px) {
+    .hero-text { display: block; }
+  }
+  .ht-over {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 15px;
+    letter-spacing: 0.42em;
+    text-transform: uppercase;
+    color: var(--gold-bright);
+  }
+  .ht-orn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 10px 0 4px;
+    color: var(--gold);
+    font-size: 12px;
+  }
+  .ht-orn::before, .ht-orn::after {
+    content: '';
+    height: 1px;
+    width: 52px;
+    background: rgba(217, 181, 106, 0.5);
+  }
+  .ht-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 600;
+    font-size: clamp(64px, 19vw, 96px);
+    line-height: 1;
+    color: #f3e5bd;
+    margin: 4px 0 14px;
+  }
+  .ht-sub {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 15px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    line-height: 1.8;
+    color: var(--gold-bright);
+    margin-bottom: 16px;
+  }
+  .ht-poem {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 18px;
+    line-height: 1.65;
+    color: #ddd8cb;
+  }
+  .ht-lucky {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 21px;
+    color: var(--gold-bright);
+    margin-top: 14px;
+  }
+
+  /* ============ PANEL ============ */
+  .wrap {
+    position: relative;
+    z-index: 5;
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 18px 44px;
+  }
+  .panel {
+    margin-top: -34px;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    box-shadow: 0 24px 70px rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(4px);
+  }
+  @media (max-width: 700px) {
+    .panel { margin-top: 14px; }
+  }
+  .panel-grid {
+    display: grid;
+    grid-template-columns: 400px 1fr;
+  }
+  .col-form { padding: 28px 30px 26px; }
+  .col-msgs {
+    padding: 24px 28px 22px;
+    border-left: 1px solid var(--line);
+  }
+  @media (max-width: 900px) {
+    .panel-grid { grid-template-columns: 1fr; }
+    .col-msgs { border-left: none; border-top: 1px solid var(--line); }
+  }
+
+  .col-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 20px;
+  }
+  .col-head svg { flex: none; }
+
+  .field {
+    width: 100%;
+    background: #0e1219;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    color: #eceadf;
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    padding: 13px 15px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .field::placeholder { color: #767c88; }
+  .field:focus {
+    border-color: rgba(217, 181, 106, 0.65);
+    box-shadow: 0 0 0 3px rgba(217, 181, 106, 0.14);
+  }
+  textarea.field {
+    min-height: 130px;
+    resize: vertical;
+    margin-top: 14px;
+  }
+
+  .send-btn {
+    width: 100%;
+    margin-top: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    padding: 14px;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(180deg, #dfb463, #b3873a);
+    color: #fff8ea;
+    font-family: 'Inter', sans-serif;
+    font-size: 13.5px;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    cursor: pointer;
+    box-shadow: 0 6px 18px rgba(217, 181, 106, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+    transition: filter 0.2s, transform 0.1s;
+  }
+  .send-btn:hover { filter: brightness(1.08); }
+  .send-btn:active { transform: translateY(1px); }
+  .send-btn:focus-visible { outline: 2px solid var(--gold-bright); outline-offset: 3px; }
+  .send-btn svg { width: 15px; height: 15px; fill: #fff8ea; }
+
+  .success-msg {
+    display: none;
+    margin-top: 14px;
+    text-align: center;
+    font-size: 13px;
+    color: var(--gold-bright);
+  }
+  .success-msg.show { display: block; }
+  .form-note {
+    margin-top: 14px;
+    text-align: center;
+    font-size: 12.5px;
+    color: var(--muted);
+  }
+
+  .message-row {
+    display: grid;
+    grid-template-columns: 112px 1fr auto;
+    gap: 16px;
+    align-items: center;
+    background: var(--row);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 10px;
+    padding: 15px 16px;
+    margin-bottom: 10px;
+  }
+  .m-name {
+    font-weight: 600;
+    font-size: 15px;
+    color: #f1efe8;
+    overflow-wrap: anywhere;
+  }
+  .m-text {
+    font-size: 14px;
+    line-height: 1.5;
+    color: #c9cdd5;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+  .m-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 12px;
+    color: var(--muted-2);
+    white-space: nowrap;
+  }
+  .m-meta svg { width: 14px; height: 14px; fill: var(--gold); }
+  @media (max-width: 640px) {
+    .message-row { grid-template-columns: 1fr auto; }
+    .m-text { grid-column: 1 / -1; }
+  }
+
+  #messagesWall.collapsed .message-row:nth-child(n+6) { display: none; }
+
+  .no-messages {
+    text-align: center;
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 18px;
+    color: var(--muted);
+    border: 1px dashed rgba(217, 181, 106, 0.35);
+    border-radius: 10px;
+    padding: 26px 18px;
+  }
+
+  .read-more {
+    display: none;
+    margin: 12px auto 2px;
+    align-items: center;
+    gap: 7px;
+    background: none;
+    border: none;
+    color: var(--gold);
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    letter-spacing: 0.04em;
+    padding: 8px 12px;
+    cursor: pointer;
+  }
+  .read-more.on { display: flex; }
+  .read-more svg {
+    width: 14px; height: 14px;
+    stroke: var(--gold);
+    fill: none;
+    stroke-width: 2;
+    transition: transform 0.25s;
+  }
+  .read-more.open svg { transform: rotate(180deg); }
+
+  .foot {
+    margin: 30px 0 10px;
+    text-align: center;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 20px;
+    color: var(--gold);
+  }
+  .foot .heart { margin-right: 8px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .zoomwrap, .glow, .tw, .fly, .shooter, .cloud { animation: none !important; }
+    .glow { opacity: 0.8; }
+    .tw { opacity: 0.5; }
+    .fly { opacity: 0.7; }
+    .cloud { opacity: 0.5; }
+  }
+</style>
+</head>
+<body>
+
+<div class="hero" id="hero">
+  <div class="zoomwrap" id="zoomwrap">
+    <picture>
+      <source media="(max-width: 700px)" srcset="hero-mobile.jpg">
+      <img id="heroImg" src="hero-desktop.jpg" fetchpriority="high"
+           alt="A starlit forest path with a wooden signpost pointing to Unknown, Complexity, and Solutions, wishing Mike a happy birthday">
+    </picture>
+    <div class="fx-layer" id="glowLayer"></div>
+    <div class="fx-layer" id="skyLayer"></div>
+  </div>
+  <div class="fx-layer" id="flyLayer"></div>
+  <div class="hero-fade"></div>
+</div>
+
+<div class="hero-text">
+  <p class="ht-over">Happy Birthday</p>
+  <div class="ht-orn">&#10022;</div>
+  <p class="ht-name">Mike</p>
+  <p class="ht-sub">Thank you for leading us<br>into the unknown.</p>
+  <p class="ht-poem">The problems are complex. The stakes are high.<br>
+     The path is rarely clear.<br>
+     But with you, we figure it out.<br>
+     Every time.</p>
+  <p class="ht-lucky">We're lucky to have you.</p>
+</div>
+
+<main class="wrap">
+  <section class="panel">
+    <div class="panel-grid">
+
+      <div class="col-form">
+        <div class="col-head">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="#d9b56a" aria-hidden="true"><path d="M21 3c-6 0-11 2-14 5s-4 7-4 13c6 0 10-1 13-4s5-8 5-14zM6 18c1-4 4-8 9-11-2 5-5 9-9 11z"/></svg>
+          Leave a Birthday Note for Mike
+        </div>
+        <input type="text" id="nameInput" class="field" placeholder="Your name">
+        <textarea id="messageInput" class="field" placeholder="Your birthday message"></textarea>
+        <button type="button" class="send-btn" onclick="submitMessage()">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg>
+          Send Your Message
+        </button>
+        <div class="success-msg" id="successMsg">Sent. Your note is on the path for Mike.</div>
+        <p class="form-note">Your message will appear on the path for Mike to see.</p>
+      </div>
+
+      <div class="col-msgs">
+        <div class="col-head">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="#d9b56a" aria-hidden="true"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17l-6.1 3.6 1.4-6.8L2.2 9.1l6.9-.8z"/></svg>
+          Messages from the Team
+        </div>
+        <div id="messagesWall" class="collapsed"></div>
+        <button type="button" class="read-more" id="readMore" onclick="toggleExpand()">
+          <span id="readMoreLabel">Read more messages</span>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+      </div>
+
+    </div>
+  </section>
+
+  <footer class="foot"><span class="heart">&#9825;</span>We appreciate you. Happy Birthday, Mike!</footer>
+</main>
+
+<iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>
+<form id="postForm" method="post" target="hidden_iframe" style="display:none;">
+  <input type="hidden" name="name" id="hidName">
+  <input type="hidden" name="message" id="hidMessage">
+</form>
+
+<script>
+  var messages = [];
+  var expanded = false;
+
+  var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var mobileMq = window.matchMedia('(max-width: 700px)');
+
+  var STAR_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17l-6.1 3.6 1.4-6.8L2.2 9.1l6.9-.8z"/></svg>';
+
+  /* ---------- scene effects ---------- */
+  var GLOWS = {
+    desktop: [
+      { x: 87.5, y: 46.5, s: 10,  d: 2.9, main: true },
+      { x: 46.4, y: 72,   s: 6,   d: 4.2 },
+      { x: 56.8, y: 73,   s: 4.2, d: 3.4 },
+      { x: 61.5, y: 85.5, s: 4.6, d: 3.1 },
+      { x: 52.5, y: 90.5, s: 9,   d: 5.6 }
+    ],
+    mobile: [
+      { x: 81.6, y: 46.5, s: 13,  d: 2.9, main: true },
+      { x: 20.7, y: 72,   s: 8,   d: 4.2 },
+      { x: 36.0, y: 73,   s: 6,   d: 3.4 },
+      { x: 43.0, y: 85.5, s: 6.5, d: 3.1 },
+      { x: 29.0, y: 90.5, s: 12,  d: 5.6 }
+    ]
+  };
+
+  function buildGlows() {
+    var layer = document.getElementById('glowLayer');
+    layer.innerHTML = '';
+    var set = mobileMq.matches ? GLOWS.mobile : GLOWS.desktop;
+    for (var i = 0; i < set.length; i++) {
+      var g = set[i];
+      var el = document.createElement('div');
+      el.className = 'glow' + (g.main ? ' main' : '');
+      el.style.left = g.x + '%';
+      el.style.top = g.y + '%';
+      el.style.width = g.s + '%';
+      el.style.animationDuration = g.d + 's';
+      el.style.animationDelay = (-Math.random() * 3).toFixed(2) + 's';
+      layer.appendChild(el);
+    }
+  }
+
+  function buildTwinkles() {
+    var layer = document.getElementById('skyLayer');
+    for (var i = 0; i < 34; i++) {
+      var x = Math.random() * 100;
+      var y = 2 + Math.random() * 28;
+      if (x > 45 && y > 7) continue;
+      var el = document.createElement('span');
+      el.className = 'tw';
+      el.style.left = x.toFixed(2) + '%';
+      el.style.top = y.toFixed(2) + '%';
+      el.style.animationDuration = (2.5 + Math.random() * 3.5).toFixed(1) + 's';
+      el.style.animationDelay = (-Math.random() * 6).toFixed(1) + 's';
+      layer.appendChild(el);
+    }
+  }
+
+  function buildFlies() {
+    var layer = document.getElementById('flyLayer');
+    var n = mobileMq.matches ? 10 : 16;
+    for (var i = 0; i < n; i++) {
+      var el = document.createElement('span');
+      el.className = 'fly';
+      el.style.left = (2 + Math.random() * 96).toFixed(2) + '%';
+      el.style.top = (44 + Math.random() * 52).toFixed(2) + '%';
+      el.style.setProperty('--dx', (Math.random() * 44 - 22).toFixed(0) + 'px');
+      el.style.setProperty('--dy', (Math.random() * 30 - 15).toFixed(0) + 'px');
+      el.style.setProperty('--dd', (6 + Math.random() * 7).toFixed(1) + 's');
+      el.style.setProperty('--pd', (2.2 + Math.random() * 2.8).toFixed(1) + 's');
+      el.style.animationDelay = (-Math.random() * 8).toFixed(1) + 's';
+      layer.appendChild(el);
+    }
+  }
+
+  function buildClouds() {
+    var layer = document.getElementById('skyLayer');
+    var tops = [2, 10, 18];
+    for (var i = 0; i < tops.length; i++) {
+      var el = document.createElement('div');
+      el.className = 'cloud';
+      el.style.top = tops[i] + '%';
+      el.style.width = (44 + Math.random() * 16).toFixed(0) + '%';
+      var dur = 75 + i * 28;
+      el.style.animationDuration = dur + 's';
+      el.style.animationDelay = (-Math.random() * dur).toFixed(0) + 's';
+      layer.appendChild(el);
+    }
+  }
+
+  function spawnShooter() {
+    var layer = document.getElementById('skyLayer');
+    var el = document.createElement('div');
+    el.className = 'shooter';
+    el.style.top = (3 + Math.random() * 16).toFixed(1) + '%';
+    el.style.left = (Math.random() * 30).toFixed(1) + '%';
+    el.addEventListener('animationend', function () {
+      if (el.parentNode) el.parentNode.removeChild(el);
+    });
+    layer.appendChild(el);
+  }
+
+  function scheduleShooter() {
+    if (reduceMotion) return;
+    setTimeout(function () {
+      spawnShooter();
+      scheduleShooter();
+    }, 6000 + Math.random() * 9000);
+  }
+
+  /* parallax fireflies */
+  var hero = document.getElementById('hero');
+  var flyLayer = document.getElementById('flyLayer');
+  hero.addEventListener('pointermove', function (e) {
+    if (reduceMotion || e.pointerType === 'touch') return;
+    var r = hero.getBoundingClientRect();
+    var dx = (e.clientX - r.left) / r.width - 0.5;
+    var dy = (e.clientY - r.top) / r.height - 0.5;
+    flyLayer.style.transform = 'translate(' + (dx * 14).toFixed(1) + 'px, ' + (dy * 9).toFixed(1) + 'px)';
+  });
+  hero.addEventListener('pointerleave', function () {
+    flyLayer.style.transform = '';
+  });
+
+  /* tap the scene, release fireflies */
+  hero.addEventListener('click', function (e) {
+    if (reduceMotion) return;
+    var r = hero.getBoundingClientRect();
+    for (var i = 0; i < 4; i++) {
+      var el = document.createElement('span');
+      el.className = 'fly burst';
+      el.style.left = (e.clientX - r.left) + 'px';
+      el.style.top = (e.clientY - r.top) + 'px';
+      el.style.setProperty('--dx', (Math.random() * 120 - 60).toFixed(0) + 'px');
+      el.style.setProperty('--dy', (-30 - Math.random() * 70).toFixed(0) + 'px');
+      flyLayer.appendChild(el);
+      (function (node) {
+        setTimeout(function () {
+          if (node.parentNode) node.parentNode.removeChild(node);
+        }, 2400);
+      })(el);
+    }
+  });
+
+  mobileMq.addEventListener('change', buildGlows);
+
+  /* ---------- load messages (JSONP) ---------- */
+  function loadMessages() {
+    var old = document.getElementById('jsonpScript');
+    if (old) old.parentNode.removeChild(old);
+    var s = document.createElement('script');
+    s.id = 'jsonpScript';
+    s.src = SCRIPT_URL + '?callback=handleMessages&t=' + Date.now();
+    document.body.appendChild(s);
+  }
+
+  function handleMessages(data) {
+    messages = data || [];
+    renderMessages();
+  }
+
+  /* ---------- render ---------- */
+  function renderMessages() {
+    var wall = document.getElementById('messagesWall');
+    var btn = document.getElementById('readMore');
+    var label = document.getElementById('readMoreLabel');
+    wall.innerHTML = '';
+
+    if (!messages.length) {
+      var empty = document.createElement('div');
+      empty.className = 'no-messages';
+      empty.textContent = 'No notes yet. Be the first to light the path for Mike.';
+      wall.appendChild(empty);
+      btn.classList.remove('on');
+      return;
+    }
+
+    var list = messages.slice().reverse();
+    for (var i = 0; i < list.length; i++) {
+      var m = list[i];
+      var row = document.createElement('div');
+      row.className = 'message-row';
+
+      var name = document.createElement('div');
+      name.className = 'm-name';
+      name.textContent = m.name || 'Anonymous';
+
+      var text = document.createElement('div');
+      text.className = 'm-text';
+      text.textContent = m.message || '';
+
+      var meta = document.createElement('div');
+      meta.className = 'm-meta';
+      var when = document.createElement('span');
+      when.textContent = formatAgo(m.date);
+      meta.appendChild(when);
+      meta.insertAdjacentHTML('beforeend', STAR_SVG);
+
+      row.appendChild(name);
+      row.appendChild(text);
+      row.appendChild(meta);
+      wall.appendChild(row);
+    }
+
+    wall.className = expanded ? '' : 'collapsed';
+    if (list.length > 5) {
+      btn.classList.add('on');
+      btn.classList.toggle('open', expanded);
+      label.textContent = expanded ? 'Show fewer messages' : 'Read more messages';
+    } else {
+      btn.classList.remove('on');
+    }
+  }
+
+  function toggleExpand() {
+    expanded = !expanded;
+    renderMessages();
+  }
+
+  function formatAgo(d) {
+    if (!d) return '';
+    var t = new Date(d).getTime();
+    if (isNaN(t)) return '';
+    var diff = (Date.now() - t) / 1000;
+    if (diff < 45) return 'just now';
+    if (diff < 3600) return Math.max(1, Math.round(diff / 60)) + 'm ago';
+    if (diff < 86400) return Math.round(diff / 3600) + 'h ago';
+    if (diff < 604800) return Math.round(diff / 86400) + 'd ago';
+    return new Date(t).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+  }
+
+  /* ---------- submit (hidden iframe POST) ---------- */
+  function submitMessage() {
+    var nameInput = document.getElementById('nameInput');
+    var messageInput = document.getElementById('messageInput');
+    var name = nameInput.value.trim();
+    var text = messageInput.value.trim();
+
+    if (!name || !text) {
+      alert('Please fill in both your name and a message!');
+      return;
+    }
+
+    var form = document.getElementById('postForm');
+    form.action = SCRIPT_URL;
+    document.getElementById('hidName').value = name;
+    document.getElementById('hidMessage').value = text;
+    form.submit();
+
+    messages.push({ name: name, message: text, date: new Date().toISOString() });
+    renderMessages();
+
+    nameInput.value = '';
+    messageInput.value = '';
+
+    var successMsg = document.getElementById('successMsg');
+    successMsg.classList.add('show');
+    setTimeout(function () { successMsg.classList.remove('show'); }, 3200);
+
+    setTimeout(loadMessages, 3500);
+  }
+
+  buildGlows();
+  buildClouds();
+  buildTwinkles();
+  buildFlies();
+  renderMessages();
+  setTimeout(function () { if (!reduceMotion) spawnShooter(); }, 2500);
+  scheduleShooter();
+  loadMessages();
+  setInterval(loadMessages, 60000);
+</script>
+
+</body>
+</html>
